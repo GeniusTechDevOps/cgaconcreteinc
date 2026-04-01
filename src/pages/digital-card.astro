@@ -1,0 +1,32 @@
+---
+import BusinessCard from "../components/global/BusinessCard";
+import type { RootObject, SectionsHomeAbout } from "../interfaces/dbData";
+import Layout from "../layouts/Layout-2.astro";
+
+
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+
+//filtrar para obtener la section de home
+const dataBlocks = data?.sectionsHomeAbout.filter(
+    (section: SectionsHomeAbout) => section.section === "blocks",
+);
+//filtrar para obtener la section de about
+const aboutSection = data?.sectionsHomeAbout.filter(
+    (section: SectionsHomeAbout) => section.section === "about",
+);
+---
+
+<Layout
+    title={`Home | Digital Card |`}
+    description={dataBlocks[1].text}
+    favicon={data.logos.primary}
+    featuredImage={data.logos.favicon}
+    keywords={data.services.map((service) => service.title).join(", ")}
+>
+    <div class="w-full h-screen flex justify-center items-center">
+        <BusinessCard data={data} client:load />
+    </div>
+</Layout>

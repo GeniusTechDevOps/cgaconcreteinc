@@ -1,0 +1,104 @@
+---
+import type { RootObject } from "../interfaces/dbData";
+import UnderConstruction from "../components/global/UnderConstruction.astro";
+import SiteDown from "../components/global/SiteDown.astro";
+
+interface Props {
+    title: string;
+    description: string;
+    keywords: string;
+    featuredImage: string;
+    favicon: string;
+}
+const { title, description, keywords, featuredImage, favicon } = Astro.props;
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+const enableDarkMode = data.widgets.popup;
+const { url } = Astro.request;
+const domain = new URL(url).origin;
+const isLocalhost = domain.includes("localhost");
+const isSubdomainVercel = domain.includes("vercel.app");
+const isSubdomainNetlify = domain.includes("netlify.app");
+---
+
+<!doctype html>
+<html lang="en" transition:animate="slide">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content={description} />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href={favicon} />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <meta name="keywords" content={keywords} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={featuredImage} />
+        <meta property="og:type" content="website" />
+
+        <!-- mostrar imagen en la card al enviar -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={featuredImage} />
+        <link href="../assets/css/styles.css" rel="stylesheet" />
+        <link href="../assets/css/button.css" rel="stylesheet" />
+        <link
+            href="https://cdn.jsdelivr.net/gh/Andres179012/reacktor-fonts/style.css"
+            rel="stylesheet"
+        />
+
+        <!-- Font Awesome -->
+        <link
+            href="https://cdn.jsdelivr.net/gh/yader316/cdn-font-pro@main/fontawesome-pro-6.5.2-web/css/all.min.css"
+            rel="stylesheet"
+        />
+        <script
+            src="https://cdn.jsdelivr.net/gh/InspiredDevops/inspired-components/review-widget.js"
+            type="module"
+            defer></script>
+
+        <!-- <ViewTransitions /> -->
+    </head>
+    <body
+        style={{
+            "--btn-border-color": data.colors.btnHoverColor,
+            "--btn-hover-color": data.colors.btnHoverColor,
+            "--primary": data.colors.primaryColor,
+            "--secondary": data.colors.secondaryColor,
+            "--tertiary": data.colors.tertiaryColor,
+            "--fourth": data.colors.fourthColor,
+            "--title": data.colors.titleColor,
+            "--text": data.colors.textColor,
+            "--btn-color": data.colors.btnColor,
+        }}
+    >
+        {
+            !isLocalhost &&
+            !isSubdomainVercel &&
+            !isSubdomainNetlify &&
+            data.widgets.underConstrution ? (
+                <UnderConstruction />
+            ) : data.widgets.siteDown ? (
+                <SiteDown />
+            ) : (
+                <div class="bg-[#0e0e0e] text-white">
+                    <main>
+                        <slot />
+                    </main>
+                </div>
+            )
+        }
+
+        <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/gh/CodexRob/emailcdn@main/index-06e7f5fd.js"
+            defer></script>
+        <script
+            src="https://static.elfsight.com/platform/platform.js"
+            data-use-service-core
+            defer></script>
+    </body>
+</html>

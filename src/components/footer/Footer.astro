@@ -1,0 +1,199 @@
+---
+import FormatText from "../../hooks/FormatText";
+import UseTextHidden from "../../hooks/UseTextHidden";
+import type { RootObject, SectionsHomeAbout } from "../../interfaces/dbData";
+import IconGlobal from "../global/IconGlobal";
+import HighlightedText from "../global/TitleColor";
+import GalleryFooter from "./galleryFooter.tsx";
+
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+//filtrar para obtener la section de about
+const aboutSection = data?.sectionsHomeAbout.filter(
+  (section: SectionsHomeAbout) => section.section === "about"
+);
+const year = new Date().getFullYear();
+---
+
+<footer class="text-white mt-10">
+  <div
+    class="md:w-[70%] bg-primary mb-[-80px] z-10 relative mx-auto rounded-md md:px-10 flex md:flex-nowrap flex-wrap items-center md:py-0 py-8 px-4"
+  >
+    <img
+      src={data.logos.primary}
+      alt={data.name}
+      class="max-w-[250px] max-h-[250px] object-contain py-4 animated-element"
+      width="250"
+      height="250"
+      loading="lazy"
+    />
+    <div class="p-3">
+      <h2 class="md:text-4xl text-2xl font-bold">
+        {data.name}
+      </h2>
+      <h2 class="md:text-4xl text-2xl font-bold">
+        <HighlightedText text={data.slogan[5]} defaultColor="white" />
+      </h2>
+    </div>
+  </div>
+  <div class="w-full bg-zinc-900 pt-28">
+    <div
+      class="grid grid-cols-1 md:grid-cols-3 gap-4
+    md:w-[80%] mx-auto w-[95%]"
+    >
+      <!-- Newsletter -->
+      <div class="w-full mb-6 md:p-4 p-2 relative">
+        <h3 class="text-[20px] font-bold text-secondary mb-3"><UseTextHidden text="Services" client:load /></h3>
+        <div class="grid grid-cols-2 gap-2 text-white">
+          {
+            data.services.slice(0, 8).map((service) => (
+              <a
+                class=" mb-2"
+                href={
+                  data.widgets.landingServices === true
+                    ? `/services/${FormatText(service.title)}`
+                    : "/services"
+                }
+              >
+                <span class=" text-[24px] text-secondary mr-2">
+                  <IconGlobal />
+                </span>
+                <span class="text-white">{service.title}</span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Official Info -->
+      <div class="w-full mb-6 md:p-4 p-2 relative">
+        <h3 class="text-[20px] font-bold text-secondary mb-3">
+          <UseTextHidden text="Official Info" client:load />
+        </h3>
+        <ul>
+          {
+            data.dataGeneral.emails.map((email) => (
+              <li class="mb-2 flex gap-2 items-center">
+                <i class="fas fa-envelope text-white mr-2 bg-primary p-1 text-[20px] rounded-md" />
+
+                <a
+                  href={`mailto:${email.email}`}
+                  class="flex flex-col text-white"
+                >
+                  <span class="font-bold">
+                    <UseTextHidden text="Email" client:load />
+                  </span>
+                  <span>{email.email}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <ul
+          class="list-none mb-4
+          grid grid-cols-2 gap-4 text-white"
+        >
+          {
+            data.dataGeneral.location.slice(0, 1).map((phone) => (
+              <li class="mb-2 flex gap-2 items-center">
+                <i class="fas fa-location text-white mr-2 bg-primary p-1 text-[20px] rounded-md" />
+                <span class="flex flex-col text-white">
+                  <span class="font-bold">
+                    <UseTextHidden text="Location" client:load />
+                  </span>
+                  <span>{phone.city}</span>
+                </span>
+              </li>
+            ))
+          }
+          {
+            data.dataGeneral.phones.map((phone) => (
+              <li class="mb-2 flex gap-2 items-center">
+                <i class="fas fa-phone text-white mr-2 bg-primary p-1 text-[20px] rounded-md" />
+
+                <a
+                  href={`tel:+1${phone.number}`}
+                  class="flex flex-col text-white"
+                >
+                  <span class="font-bold">
+                    <UseTextHidden text="Phone" client:load />
+                  </span>
+                  <span>{phone.number}</span>
+                </a>
+              </li>
+            ))
+          }
+
+          {
+            data.dataGeneral.openingHours.map((hours) => (
+              <li class="mb-2 flex gap-2 items-center">
+                <i class="fas fa-calendar text-white mr-2 bg-primary p-1 text-[20px] rounded-md" />
+
+                <span class="flex flex-col text-white">
+                  <span class="font-bold">{hours.days}</span>
+                  <span>{hours.hours}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Gallery -->
+      <div class="w-full mb-6 md:p-4 p-2">
+        <h3 class="text-[20px] font-bold text-secondary mb-3">
+          <UseTextHidden text="Gallery" client:load />
+        </h3>
+        <GalleryFooter data={data} client:load />
+      </div>
+    </div>
+  </div>
+  <div
+    class="py-4 w-full text-center bg-secondary flex items-center justify-between"
+  >
+    <div class="md:w-[80%] mx-auto flex flex-wrap justify-between items-center">
+      <div>
+        <p class="text-center text-white
+      text-[20px] font-bold">
+          © {year} <UseTextHidden text="All rights reserved by" client:load/> {data.name}
+        </p>
+      </div>
+      <div>
+        <ul
+          class="list-none flex justify-center items-center text-white gap-6 font-bold flex-wrap md:pt-0 pt-4"
+        >
+          <li
+            class="mx-2 border-l-2 border-white pl-2 flex gap-2 items-center hover:transform
+          hover:scale-110 transition-all duration-300 ease-in-out"
+          >
+            <a href="/" class="text-white">Home</a>
+            <i class="fas fa-chevron-right text-[12px]"></i>
+          </li>
+          <li
+            class="mx-2 border-l-2 border-white pl-2 flex gap-2 items-center hover:transform
+            ver:scale-110 transition-all duration-300 ease-in-out"
+          >
+            <a href="/services" class="text-white">Services</a>
+            <i class="fas fa-chevron-right text-[12px]"></i>
+          </li>
+          <li
+            class="mx-2 border-l-2 border-white pl-2 flex gap-2 items-center hover:transform
+            ver:scale-110 transition-all duration-300 ease-in-out"
+          >
+            <a href="/portfolio" class="text-white">Portfolio</a>
+            <i class="fas fa-chevron-right text-[12px]"></i>
+          </li>
+          <li
+            class="mx-2 border-l-2 border-white pl-2 flex gap-2 items-center hover:transform
+            ver:scale-110 transition-all duration-300 ease-in-out"
+          >
+            <a href="/contact" class="text-white">Contact</a>
+            <i class="fas fa-chevron-right text-[12px]"></i>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>

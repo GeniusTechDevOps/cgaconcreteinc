@@ -1,0 +1,401 @@
+.float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 30px;
+    right: 16px;
+    background-color: #4cc370;
+    color: #fff;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2px 2px 3px #999;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .float:hover {
+    text-decoration: none;
+    color: #fff;
+    background-color: #3d9e5a;
+  }
+  
+  .my_float {
+    margin-top: 16px;
+  }
+  
+  /*modal*/
+  /* offset-x > | offset-y ^| blur-radius | spread-radius | color */
+  @keyframes pulse {
+    0% {
+      transform: scale(1, 1);
+    }
+  
+    50% {
+      opacity: 0.3;
+    }
+  
+    100% {
+      transform: scale(1.45);
+      opacity: 0;
+    }
+  }
+  
+  .pulse {
+    -webkit-animation-name: pulse;
+    animation-name: pulse;
+  }
+  
+  .nav_bottom {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-content: flex-end;
+    width: auto;
+    height: auto;
+    position: fixed;
+    z-index: 10;
+    bottom: 15px;
+    right: 0px;
+    padding: 5px;
+    margin: 0px;
+  }
+  
+  @media (max-width: 360px) {
+    .nav_bottom {
+      width: 320px;
+    }
+  }
+  
+  
+  @media (max-width: 700px) {
+    .float {
+      bottom: 85px;
+    }
+  
+    .nav_bottom {
+      bottom: 70px;
+    }
+    
+  }
+  
+  .whatsapp_button {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 60px;
+    height: 60px;
+    z-index: 8;
+    transition: 0.3s;
+    margin: 10px;
+    padding: 7px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    border-radius: 50%;
+    background-color: white;
+    /* offset-x > | offset-y ^| blur-radius | spread-radius | color */
+    -webkit-box-shadow: 1px 1px 6px 0px rgba(68, 68, 68, 0.705);
+    -moz-box-shadow: 1px 1px 6px 0px rgba(68, 68, 68, 0.705);
+    box-shadow: 1px 1px 6px 0px rgba(68, 68, 68, 0.705);
+  }
+  
+  .circle_anime {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-content: center;
+    width: 60px;
+    height: 60px;
+    top: 15px;
+    right: 15px;
+    border-radius: 50%;
+    transition: 0.3s;
+    background-color: #77bb4a;
+    animation: pulse 1.2s 4s ease 4;
+  }
+  
+  .popup_whatsapp {
+    display: none;
+    position: fixed;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 350px;
+    height: auto;
+    bottom: 95px;
+    right: 20px;
+    transition: 0.5s;
+    border-radius: 10px 10px 0 0;
+    z-index: 999;
+    background-color: white;
+    /* offset-x > | offset-y ^| blur-radius | spread-radius | color */
+    -webkit-box-shadow: 2px 1px 6px 0px rgba(68, 68, 68, 0.705);
+    -moz-box-shadow: 2px 1px 6px 0px rgba(68, 68, 68, 0.705);
+    box-shadow: 2px 1px 6px 0px rgba(68, 68, 68, 0.705);
+    animation: slideInRight 0.6s 0s both;
+  }
+  
+  .popup_whatsapp > div {
+  }
+  
+  .content_whatsapp {
+    padding: 15px;
+  }
+  
+  @media (max-width: 680px) {
+    .popup_whatsapp p {
+      font-size: 0.9em;
+    }
+  }
+  
+  .popup_whatsapp > .content_whatsapp._top {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .popup_whatsapp > .content_whatsapp._top p {
+    color: #585858;
+    font-family: "Roboto";
+    font-weight: 400;
+    font-size: 1em;
+  }
+  
+  .popup_whatsapp > .content_whatsapp_header._top span {
+    font-weight: bold;
+    font-size: 1em;
+  }
+  
+  .popup_whatsapp > .content_whatsapp._top img {
+    margin-right: 20px;
+  }
+  
+  .popup_whatsapp > .content_whatsapp._bottom {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .closePopup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    height: 28px;
+    margin: -50px -20px 0px 30px;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: green;
+    color: #fff;
+    -webkit-box-shadow: 1px 1px 2px 0px rgba(68, 68, 68, 0.705);
+    -moz-box-shadow: 1px 1px 2px 0px rgba(68, 68, 68, 0.705);
+    box-shadow: 1px 1px 2px 0px rgba(68, 68, 68, 0.705);
+  }
+  
+  .closePopup:hover {
+    background-color: black;
+    color: #fff;
+    transition: 0.3s;
+  }
+  
+  .send_msPopup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    margin: 0px 0px 0px 5px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    -webkit-box-shadow: 1px 1px 2px 0px rgba(68, 68, 68, 0.705);
+    -moz-box-shadow: 1px 1px 2px 0px rgba(68, 68, 68, 0.705);
+    box-shadow: 1px 1px 2px 0px rgba(68, 68, 68, 0.705);
+  }
+  
+  .send_msPopup:hover {
+    background-color: #f8f8f8;
+    transition: 0.3s;
+  }
+  
+  .is_active_whatsapp_popup {
+    display: flex;
+    animation: slideInRight 0.6s 0s both;
+    background-color: #fafafa;
+  }
+  
+  input.whats_input[type="text"] {
+    width: 250px;
+    height: 40px;
+    box-sizing: border-box;
+    border: 0px solid #ffffff;
+    border-radius: 20px;
+    font-size: 1em;
+    background-color: #ffffff;
+    padding: 0px 0px 0px 10px;
+    -webkit-transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out;
+    outline: none;
+    transition: 0.3s;
+  }
+  
+  @media (max-width: 420px) {
+    input.whats_input[type="text"] {
+      width: 225px;
+    }
+  }
+  
+  input.whats_input::placeholder {
+    /* Most modern browsers support this now. */
+    color: rgba(68, 68, 68, 0.705);
+    opacity: 1;
+  }
+  
+  input.whats_input[type="text"]:focus {
+    background-color: #f8f8f8;
+    -webkit-transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out;
+    transition: 0.3s;
+  }
+  
+  .icon_whatsapp_small {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .icon_whatsapp {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .icon_font_color {
+    color: #ffffff;
+  }
+  
+  .icon_font_color__black {
+    color: #333333;
+  }
+  
+  /* // content_whatsapp */
+  
+  .content_whatsapp_header {
+    background: #095e54;
+    display: flex;
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px 10px 0 0px;
+  }
+  
+  .text_typically {
+    font-size: 14px !important;
+    color: white;
+    font-weight: 400 !important;
+  }
+  
+  .online {
+    position: relative;
+    top: 28px;
+    left: 55px;
+    width: 20px;
+    height: 15px;
+    background-color: #8bc34a;
+    border-radius: 13px;
+    border: 3px solid #fafafa;
+  }
+  
+  .chat_box_body {
+    position: relative;
+    width:100%;
+    padding: 40px 20px;
+  }
+  .chat_box_body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://elfsight.com/assets/chats/patterns/whatsapp.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: .1;
+  }
+  
+  .chat_box_message{
+      padding: 10px;
+      position: relative;
+      background-color: rgb(255, 255, 255);
+      border-radius: 10px;
+  }
+  
+  .text_name_body {
+    color: #838383;
+  }
+  
+  .before_img {
+    width: 65px !important;
+    height: 65px !important;
+    padding: 2px;
+    object-fit: cover;
+    border-radius: 50%;
+    padding: 3px;
+    margin-right: 10px;
+    border: 3px solid #8bc34a;
+    background: white;
+    height: auto;
+    float: left;
+    cursor: pointer;
+  }
+  
+  .self_content {
+    display: flex;
+    align-self: center;
+    align-items: center;
+  }
+  
+  .self_content span {
+    padding-left: 10px;
+  }
+  
+  
+  /*Loader Typing */
+  
+  .loader {
+    text-align: center;    
+    position: relative;
+    background: white;
+    display: flex;
+    width: 20%;
+    padding: 10px;
+    border-radius: 20px;
+  }
+  .loader span {
+    display: inline-block;
+    vertical-align: middle;
+    width: 10px;
+    height: 10px;
+    background: black;
+    border-radius: 15px;
+    animation: loader 0.8s infinite alternate;
+  }
+  .loader span:nth-of-type(2) {
+    animation-delay: 0.2s;
+  }
+  .loader span:nth-of-type(3) {
+    animation-delay: 0.6s;
+  }
+  @keyframes loader {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+  }

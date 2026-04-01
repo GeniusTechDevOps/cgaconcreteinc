@@ -1,0 +1,140 @@
+---
+import type { RootObject } from "../../interfaces/dbData";
+
+interface Props {
+  data: RootObject;
+}
+
+const { data } = Astro.props as Props;
+
+interface Route {
+  name: string;
+  path: string;
+  icon?: string;
+  child?: boolean;
+  submenu?: string;
+  statusRoutes?: boolean;
+  subitems?: any;
+}
+
+const serviceCategories = [
+  {
+    category: "Services",
+    path: "/services",
+    services: data?.services?.map((service: any) => service.title),
+    subMenu: "subMenuServices",
+    child: data?.widgets?.landingServices,
+  },
+  {
+    category: "Gallery",
+    path: "/portfolio",
+    services: data?.landingsGallery?.map((product: any) => product.nameLanding),
+    subMenu: "subMenuGallery",
+    child: data?.widgets?.landingGallery,
+  },
+];
+
+const routes: Route[] = [
+  {
+    name: "Home",
+    path: "/",
+    icon: "home",
+  },
+  {
+    name: "About Us",
+    path: "/about",
+    icon: "About",
+  },
+  ...serviceCategories.map((category) => ({
+    name: category.category,
+    path: category.path,
+    icon: category.category + "Icon",
+    child: category.child,
+    subitems: category.services, // lista de servicios
+    submenu: category.subMenu,
+  })),
+
+  {
+    name: "Reviews",
+    path: "/reviews",
+    icon: "Reviews",
+    statusRoutes: data?.reviews?.stateReviews && data.reviews?.viewAll,
+  },
+  {
+    name: "Contact",
+    path: "/contact",
+    icon: "Contact",
+  },
+];
+---
+
+<div class={`flex md:gap-6 gap-[24px]`}>
+  {
+    routes.map((item) => {
+      if (item.statusRoutes === undefined || item.statusRoutes === true) {
+        return (
+          <div
+            class={`relative content_subItems pb-2 z-[999] md:border-none border-b-2 border-white md:w-auto w-[200px]`}
+          >
+            {item.child ? (
+              <>
+                <span
+                  class={`font-medium text-[17px] cursor-pointer flex items-center`}
+                >
+                  <span>{item.name}</span>
+                  <i class="fas fa-plus ml-2" />
+                </span>
+                <div
+                  class={`submenu-container md:absolute relative bg1 bg-white shadow-lg md:my-0 my-4 py-4 pr-4 gap-2 md:w-[300px]  rounded-xl`}
+                >
+                  {item.submenu === "subMenuServices" &&
+                    item.subitems.map((subitem: any) => (
+                      <a
+                        href={`/services/${subitem
+                          .replace(/\s+/g, "-")
+                          .toLowerCase()}`}
+                        class="group mr-4 flex items-center rounded-md py-2 transition duration-300 transform hover:scale-105 hover:bg-white hover:text-black"
+                      >
+                        <span class="mr-2 w-2.5 h-2.5 bg2 rounded-full opacity-0 group-hover:opacity-100 transition duration-300" />
+                        {subitem}
+                      </a>
+                    ))}
+
+                  {item.submenu === "subMenuGallery" &&
+                    item.subitems.map((subitem: any) => (
+                      <div
+                        class="group mr-4  flex items-center rounded-md py-2 transition duration-300 transform hover:scale-105
+                        hover:bg-white hover:text-black
+                        "
+                      >
+                        <span class="mr-2 w-2.5 h-2.5 bg2 rounded-full opacity-0 group-hover:opacity-100 transition duration-300" />
+                        <a
+                          href={`/portfolio/${subitem
+                            .replace(/\s+/g, "-")
+                            .toLowerCase()}`}
+                        >
+                          {subitem}
+                        </a>
+                      </div>
+                    ))}
+                </div>
+              </>
+            ) : (
+              <a href={item.path} class="">
+                <span
+                  class="font-medium text-[17px] md:py-2 md:px-4 pb-2 md:cursor-pointer md:rounded-full md:transition-all md:duration-500 md:ease-in-out
+               
+                "
+                >
+                  {item.name}
+                </span>
+              </a>
+            )}
+          </div>
+        );
+      } else {
+        return null;
+      }
+    })
+  }
+</div>

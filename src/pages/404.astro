@@ -1,0 +1,25 @@
+---
+import type { RootObject, SectionsHomeAbout } from "../interfaces/dbData";
+import Layout from "../layouts/Layout.astro";
+
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+
+//filtrar para obtener la section de home
+const dataBlocks = data?.sectionsHomeAbout.filter(
+  (section: SectionsHomeAbout) => section.section === "blocks",
+);
+---
+
+<Layout
+  title={`404 | ${data.name}`}
+  description={dataBlocks[0].text}
+  favicon={data.logos.primary}
+  featuredImage={data.logos.favicon}
+  keywords="404, page not found"
+>
+  <h1>404</h1>
+  <p>Page not found</p>
+</Layout>

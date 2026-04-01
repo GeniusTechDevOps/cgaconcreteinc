@@ -1,0 +1,30 @@
+---
+import type { RootObject, SectionsHomeAbout } from "../../interfaces/dbData";
+import ButtonContent from "../buttons/Buttons";
+
+interface Props {
+  data: RootObject;
+  homeSection: SectionsHomeAbout[]
+}
+
+const { data, homeSection } = Astro.props;
+---
+
+<div class="flex flex-wrap justify-center items-center bg-primary pt-[250px] pb-[100px]">
+  <!-- Image side with overlay -->
+  <!-- Text side with white background -->
+  <div class="md:w-[70%] mx-auto w-[95%]">
+    <div
+      class="md:w-[70%] mx-auto flex flex-col gap-6 text-center justify-center items-center"
+    >
+      <h2 class="text-white md:text-[40px] text-[25px] mb-2 font-bold">
+        {homeSection[1].title}
+      </h2>
+      <p class="text-white">{homeSection[1].text}</p>
+      <ButtonContent
+        linkBtn={`tel:+1${data.dataGeneral.phones[0].number}`}
+        btnstyle="bg-white text-primary"
+      />
+    </div>
+  </div>
+</div>

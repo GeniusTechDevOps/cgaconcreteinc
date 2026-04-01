@@ -1,0 +1,163 @@
+---
+import Menu from "../headerComponents/Menu.tsx";
+import type { RootObject } from "../../interfaces/dbData.ts";
+import MenuMobile from "../headerComponents/MenuMobile.tsx";
+import ToggleButton from "../global/ToggleButton.tsx";
+import IconGlobal from "../global/IconGlobal";
+import UseTextHidden from "../../hooks/UseTextHidden";
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+---
+
+<header transition:animate="none">
+  <div class="md:flex flex-col hidden md:mb-[-30px] bg-white">
+    <div class="w-full bg-primary">
+      <div
+        class="text-white flex justify-between md:w-[70%] w-full mx-auto py-4 md:px-8 rounded-br-xl rounded-bl-xl items-center font-bold"
+      >
+        <div class="flex gap-6">
+          {
+            data.dataGeneral.phones.slice(0, 2).map((item) => {
+              return (
+                <a
+                  href={`tel:+1${item.number}`}
+                  class="flex items-center gap-2"
+                >
+                  <span class="bg-white text-primary w-8 h-8 flex justify-center items-center text-[24px] rounded-lg p-1">
+                    <IconGlobal />
+                  </span>
+                  <div class="flex flex-col text-white">
+                    <span>{item.title}</span>
+                    <span>(+1) {item.number}</span>
+                  </div>
+                </a>
+              );
+            })
+          }
+        </div>
+        
+        <div>
+          <div class="flex items-center gap-2">
+            <span
+              class="bg-white text-primary w-8 h-8 flex justify-center items-center text-[24px] rounded-lg p-1"
+            >
+              <IconGlobal />
+            </span>
+            <span class="text-white">{data.name}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="md:w-[80%] w-full mx-auto py-1 flex items-center justify-between md:px-6 rounded-2xl"
+    >
+      <img
+        src={data.logos.secondary}
+        alt={data.name}
+        class="max-w-[300px] max-h-[300px] object-contain"
+        width="300"
+        height="300"
+        loading="lazy"
+      />
+
+      <div class="flex gap-4 font-bold">
+        <div>
+          {
+            data.dataGeneral.location.slice(0, 1).map((item) => {
+              return (
+                <div class="flex border-r-[1px] border-white px-8 py-4">
+                  <span
+                    style={{ backgroundColor: data.colors.primaryColor }}
+                    class="p-4 bg-opacity-30 flex justify-center items-center rounded-2xl w-[50px] h-[50px] "
+                  >
+                    <i class={`fa-solid fa-map text-[26px] text-white`} />
+                  </span>
+                  <div class="flex flex-col pl-2 text-secondary">
+                    <span
+                      class="font-bold text-[18px] text-secondary"
+                      
+                    >
+                      <UseTextHidden text="Location" client:load />
+                    </span>
+                    <span>{item.city}</span>
+                  </div>
+                </div>
+              );
+            })
+          }
+        </div>
+        <div>
+          {
+            data.dataGeneral.openingHours.slice(0, 1).map((item) => {
+              return (
+                <div class="flex px-8 py-4">
+                  <span
+                    style={{ backgroundColor: data.colors.primaryColor }}
+                    class="p-4 bg-opacity-30 flex justify-center items-center rounded-2xl w-[50px] h-[50px] "
+                  >
+                    <i
+                      class={`fa-solid fa-calendar-alt text-[26px] text-white`}
+                    />
+                  </span>
+                  <div class="flex flex-col pl-2 text-secondary">
+                    <span
+                      class="font-bold text-[18px] text-secondary"
+                      
+                    >
+                      {item.days}
+                    </span>
+                    <span>{item.hours}</span>
+                  </div>
+                </div>
+              );
+            })
+          }
+        </div>
+        <div class="flex items-center">
+          <ToggleButton client:load data={data} />
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center shadow-lg">
+      <div class="flex w-full">
+        <div
+          class="md:w-[70%] w-full md:h-[70px]"
+          style={{ backgroundColor: data.colors.primaryColor }}
+        >
+          <div
+            class="md:w-[80%] mx-auto md:h-[70px] flex self-center items-center"
+          >
+            <Menu data={data} styleList="text-white" client:load />
+          </div>
+        </div>
+        <div
+          class="flex gap-2 md:w-[20%] w-full px-4 rounded-tr-full rounded-br-full md:h-[70px] border-l-8 border-white"
+          style={{ backgroundColor: data.colors.secondaryColor }}
+        >
+          {
+            data.redesSociales.map((item) => {
+              return (
+                <a
+                  style={{ backgroundColor: data.colors.primaryColor }}
+                  href={item.link}
+                  target="_blank"
+                  aria-label={item.name}
+                  class={`bg-[${data.colors.primaryColor}] w-10 h-10 flex justify-center items-center self-center rounded-xl text-[18px] text-white`}
+                >
+                  <i class={`fa-brands fa-${item.icon}`} />
+                </a>
+              );
+            })
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="md:hidden block relative">
+    <div class="z-50">
+      <MenuMobile data={data} client:visible />
+    </div>
+  </div>
+</header>

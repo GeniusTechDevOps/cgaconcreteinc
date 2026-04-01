@@ -1,0 +1,115 @@
+---
+import type { RootObject, SectionsHomeAbout } from "../../interfaces/dbData";
+interface Props {
+  data: RootObject;
+  aboutSection: SectionsHomeAbout[];
+}
+
+const { data, aboutSection } = Astro.props;
+---
+
+<section class="flex items-center justify-center lg:h-screen">
+  <div class="px-4 py-20 mx-auto max-w-7xl">
+    <div class="flex flex-wrap">
+      <div class="relative w-full mb-10 lg:mb-0 lg:mr-20 lg:w-2/5">
+        <div
+          class="absolute z-10 hidden w-full h-full rounded -top-6 left-6 lg:block"
+          style={{ backgroundColor: data.colors.secondaryColor }}
+        >
+        </div>
+        <img
+          class="relative z-20 object-cover w-full h-full rounded"
+          src={aboutSection[1].additionalImages[0]}
+          alt=""
+        />
+      </div>
+      <div class="flex-1 pl-0 lg:pl-4">
+        <div class="mb-12">
+          <div class="relative">
+            <h2
+              class="absolute -top-14 -left-44 text-[40px] font-bold opacity-5"
+            >
+              {data.slogan[6]}
+            </h2>
+            <h2 class="text-5xl font-bold">{data.slogan[6]}</h2>
+            <div class="flex w-24 mt-3 mb-10 overflow-hidden rounded">
+              <div class="flex-1 h-2 bg-blue-200"></div>
+              <div
+                class="flex-1 h-2"
+                style={{ backgroundColor: data.colors.secondaryColor }}
+              >
+              </div>
+              <div
+                class="flex-1 h-2"
+                style={{ backgroundColor: data.colors.primaryColor }}
+              >
+              </div>
+            </div>
+          </div>
+          <p class="mb-16 text-base text-gray-500">
+            {aboutSection[1].text}
+          </p>
+        </div>
+        <div
+          class="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2"
+        >
+          <!-- Quality & Durability -->
+          <div
+            class="w-full p-8 text-center transition-all bg-white rounded shadow hover:shadow-lg"
+          >
+            <div
+              class="inline-block p-4 mb-4 rounded-full w-14 h-14"
+              style={{ backgroundColor: data.colors.secondaryColor }}
+            >
+              <i class="fas fa-star text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-black">
+              Quality & Durability
+            </h3>
+          </div>
+
+          <!-- Customer Service -->
+          <div
+            class="w-full p-8 text-center transition-all bg-white rounded shadow hover:shadow-lg"
+          >
+            <div
+              class="inline-block p-4 mb-4 rounded-full w-14 h-14"
+              style={{ backgroundColor: data.colors.secondaryColor }}
+            >
+              <i class="fas fa-headset text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-black">Expert Solutions</h3>
+          </div>
+
+          <!-- Innovation & Technology -->
+          <div
+            class="w-full p-8 text-center transition-all bg-white rounded shadow hover:shadow-lg"
+          >
+            <div
+              class="inline-block p-4 mb-4 rounded-full w-14 h-14"
+              style={{ backgroundColor: data.colors.secondaryColor }}
+            >
+              <i class="fas fa-lightbulb text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-black">Innovation</h3>
+          </div>
+
+          <!-- Sustainability & Environment -->
+          <div
+            class="w-full p-8 text-center transition-all bg-white rounded shadow hover:shadow-lg"
+          >
+            <div
+              class="inline-block p-4 mb-4 rounded-full w-14 h-14"
+              style={{ backgroundColor: data.colors.secondaryColor }}
+            >
+              <i class="fas fa-leaf text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-black">
+              Sustainability & Environment
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

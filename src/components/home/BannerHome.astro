@@ -1,0 +1,42 @@
+---
+import ButtonContent from "../buttons/Buttons";
+
+interface Props {
+  image: string;
+  slogan1: string;
+  slogan2: string;
+  description1: string;
+  description2: string;
+  data: any;
+}
+
+const { image, slogan1, slogan2, description1, description2, data } =
+  Astro.props;
+---
+
+<div class="flex flex-wrap justify-center items-center">
+  <!-- Image side with overlay -->
+  <!-- Text side with white background -->
+  <div
+    class="md:w-1/2 w-full flex flex-col gap-6 justify-center items-start self-center md:p-16 p-4 md:h-[80vh] h-[90vh] bg-primary"
+  >
+    <div class="md:w-[70%] mx-auto flex flex-col gap-6">
+      <h2 class="text-white md:text-[40px] text-[25px] mb-2 font-bold">
+        {slogan2}
+      </h2>
+      <p class="text-white">{description2}</p>
+      <ButtonContent
+        titleBtn={data?.landingLocations?.[0].description[1].textbutton}
+        linkBtn={`tel:+1${data.dataGeneral.phones[0].number}`}
+      />
+    </div>
+  </div>
+  <div class="relative md:w-1/2 w-full md:h-[80vh] h-[55vh] flex items-end">
+    <img
+      src={image}
+      alt={slogan1}
+      class="h-full w-full object-cover"
+      loading="eager"
+    />
+  </div>
+</div>

@@ -1,0 +1,64 @@
+---
+import IconGlobal from "../../components/global/IconGlobal";
+
+interface Props {
+  image: string;
+  service: string;
+  description: string;
+  phone: string;
+  color: string;
+}
+
+const { image, service, description, phone, color } = Astro.props;
+---
+
+<div class="md:w-[90%] mx-auto md:h-auto w-full flex flex-col">
+  <div class="h-full w-full shadow-md rounded-2xl basis-2/3 relative">
+    <div class="h-full w-full relative border-2 border-white rounded-2xl">
+      <img
+        src={image}
+        alt={service}
+        class="rounded-2xl w-full h-[200px] object-cover"
+        loading="eager"
+        width="200"
+        height="200"
+      />
+    </div>
+  </div>
+
+  <div class="h-full w-full mr-2 rounded-2xl flex items-center shadow-md md:p-4 p-2">
+    <div>
+      <span class="text-[40px] text-primary ml-2">
+        <IconGlobal />
+      </span>
+      <h1 class="m-2 text-[20px] font-bold">
+        {service}
+      </h1>
+
+      <div class="pt- pr-2 pl-2 flex">
+        <div class="flex flex-row m-2">
+          <p class="pl-1">{description.slice(0, 135) + ". Learn More.."}</p>
+        </div>
+      </div>
+
+      <div class="flex md:flex-row flex-col">
+        <a
+          href={`tel:+1${phone}`}
+          style={{ backgroundColor: color }}
+          class="md:m-2 m-auto mt-8 md:w-auto w-full shadow-md shadow-[#5865f28a] pt-2 pb-2 pl-6 pr-4 rounded-xl flex flex-row justify-center items-center ease-linear duration-300"
+        >
+          <i class="fas fa-phone-alt text-white"></i>
+          <h1 class="text-white text-md font-semibold pl-2">Call Us Now</h1>
+        </a>
+        <a
+          href={`/services/${service.toLowerCase().split(" ").join("-")}`}
+          style={{ backgroundColor: color }}
+          class="md:m-2 m-auto mt-8 md:w-auto w-full shadow-md shadow-[#5865f28a] pt-2 pb-2 pl-6 pr-4 rounded-xl flex flex-row justify-center items-center ease-linear duration-300"
+        >
+          <h1 class="text-white text-md font-semibold pr-2">View Details</h1>
+          <i class="fas fa-arrow-right text-white"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

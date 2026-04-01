@@ -1,0 +1,153 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+import type {
+  RootObject,
+  SectionsHomeAbout,
+  Service,
+} from "../../interfaces/dbData";
+import TransparentHeader from "../../components/global/TransparentHeader.astro";
+import DetailValues from "../../components/services/DetailValues.astro";
+import Map from "../../components/contact/Map";
+import FormatText from "../../hooks/FormatText";
+import Form from "../../components/contact/Form";
+import UseTextHidden from "../../hooks/UseTextHidden";
+const { id } = Astro.params;
+
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+
+//filtrar para obtener la section de home
+const dataBlocks = data?.sectionsHomeAbout.filter(
+  (section: SectionsHomeAbout) => section.section === "blocks",
+);
+
+// Encontrar el servicio por ID
+const service = data.services.find(
+  (service: Service) => FormatText(service.title) === id,
+);
+---
+
+<Layout
+  title={`${service?.title} | ${data.name}`}
+  description={service?.description[0].text!}
+  favicon={data.logos.primary}
+  featuredImage={service?.description[0].image!}
+  keywords={data.services.map((service) => service.title).join(", ")}
+>
+  <TransparentHeader
+    title={service?.title}
+    image={service?.description[0].image!}
+  />
+  <div class="md:w-[80%] mx-auto w-[95%] md:pt-24 py-4 flex flex-wrap">
+    <div
+      class="md:w-[30%] w-full flex flex-col md:px-6 px-2 sticky-column min-h-[100vh] max-h-[120vh]"
+    >
+      <div
+        class="h-auto overflow-y-scroll content_scroll flex flex-col animation_border rounded-md gap-1"
+      >
+        <h2
+          class="text-2xl font-bold py-4 px-4 bg-primary text-primary text-white"
+        >
+          <UseTextHidden text="Our Services" client:load />
+        </h2>
+        {
+          data.services.map((service) => (
+            <a
+              href={`/services/${FormatText(service.title)}`}
+              class="flex justify-between items-center hover:bg-gray-100 transition-colors duration-300"
+            >
+              <div class="flex py-4 px-4 rounded-md items-center justify-between">
+                <span class="text-start font-bold capitalize">
+                  {service.title}
+                </span>
+                <i class="fas fa-chevron-right text-black" />
+              </div>
+            </a>
+          ))
+        }
+      </div>
+      <div
+        class="max-w-sm rounded-xl overflow-hidden shadow-lg relative text-white my-6 h-full max-h-[350px] "
+        style={{
+          backgroundImage: `url("${data.gallery[0]}")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div class="absolute inset-0 bg-black opacity-50 rounded-xl"></div>
+        <div
+          class="relative pt-4 pb-2 px-4 text-center flex flex-col items-center self-center my-auto h-full"
+        >
+          <p class="text-xs uppercase">Contact us now</p>
+          <span class="text-3xl font-bold my-2">If need help!</span>
+          {
+            data.dataGeneral.phones.slice(0, 2).map((phone) => (
+              <a
+                href={`tel:+1${phone.number}`}
+                class="
+                  flex items-center justify-center gap-2 text-[18px] bg-secondary  text-white rounded-full px-6 py-2 my-2 transition-colors duration-300 hover:bg-primary hover:text-white
+                "
+              >
+                <i class="fas fa-phone-alt" />
+                <span class="font-bold my-2">{phone.number}</span>
+              </a>
+            ))
+          }
+          <p class="text-sm">or go to contact form:</p>
+          <div class="flex items-center justify-start pb-4 px-4">
+            <a
+              href="/contact"
+              class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white rounded px-6 py-3 my-4 flex items-center"
+            >
+              Let’s start now
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 ml-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="md:w-[70%] w-full flex flex-col md:p-4 p-1">
+      <div class="md:mt-2 mt-14">
+        {
+          service?.description.map((desc) => (
+            <div>
+              <div class="relative">
+                <img
+                  src={desc.image}
+                  alt={service?.title}
+                  class="w-full md:h-[400px] h-[200px] object-cover rounded-md"
+                />
+                <img
+                  src={data.logos.secondary}
+                  alt={data.name}
+                  class="md:w-[150px] w-[100px] absolute bottom-4 right-4 opacity-70"
+                />
+              </div>
+              <h2 class="text-[40px] font-bold py-4">{service?.title}</h2>
+              <p>{desc.text}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="flex flex-wrap gap-4 py-6 justify-center">
+        <DetailValues data={data} />
+      </div>
+    </div>
+  </div>
+  <Map data={data} />
+</Layout>

@@ -1,0 +1,50 @@
+---
+import type { RootObject } from "../../interfaces/dbData";
+import UseTextHidden from "../../hooks/UseTextHidden";
+
+interface Props {
+  image: string;
+  title?: string;
+}
+
+const { image, title } = Astro.props;
+
+const response = await fetch(import.meta.env.API_URL);
+const data: RootObject = await response.json();
+---
+
+<div class="relative bg-HeaderGloal">
+  <div class="absolute inset-0 z-10 bg-HeaderGloal"></div>
+  <div class="relative md:h-[400px] h-[350px]">
+    <img src={image} alt={title} class="object-cover w-full h-full" />
+  </div>
+  <div
+    class="absolute inset-0 z-10 md:h-[400px] h-[350px] md:p-2 p-4 md:w-[80%] w-full mx-auto flex items-center justify-start flex-wrap"
+  >
+    <div
+      class="flex flex-col items-start justify-center border-l-4 border-secondary pl-4 gap-4 md:w-[50%] w-full"
+    >
+      <h1 class="md:text-[46px] text-[30px] font-bold text-white capitalize">
+        {title}
+      </h1>
+      <div class="flex justify-center flex-row gap-4 items-center">
+        <a
+          href="/"
+          class="flex items-center gap-2 text-white text-[16px] font-medium hover:text-secondary transition-all duration-300 ease-in-out"
+        >
+          <i class="fa-solid fa-home"></i>
+          <span class="text-white text-[16px] font-medium"><UseTextHidden text="Home" client:load /></span>
+        </a>
+        <i class="fa-solid fa-arrow-right text-white"></i>
+        <span class="text-white text-[16px] font-medium">{title}</span>
+      </div>
+    </div>
+    <!-- <div class="md:w-[50%] w-full md:flex justify-center hidden">
+      <img
+        src={data.logos.secondary}
+        alt={data.name}
+        class="w-[150px] h-[150px] opacity-60 md:w-[250px] md:h-[250px] object-contain "
+      />
+    </div> -->
+  </div>
+</div>

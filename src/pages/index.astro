@@ -1,0 +1,113 @@
+---
+import Layout from "../layouts/Layout.astro";
+import type { RootObject, SectionsHomeAbout } from "../interfaces/dbData";
+import BannerServices from "../components/home/BannerHome.astro";
+import BlockOne from "../components/home/BlockOne.astro";
+import BlockOneAbout from "../components/home/BlockOneh.astro";
+import MapComponent from "../components/contact/Map.tsx";
+import VideoAnimado from "../components/global/video/VideoAnimado";
+import Directorios from "../components/home/Directorios";
+import ValuesHome from "../components/home/ValuesHome.astro";
+import HeroSection2 from "../components/home/HeroSection2";
+import ServicesHome from "../components/home/ServicesHome2";
+import BlockTwo from "../components/home/BlockTwo.astro";
+import IconGlobal from "../components/global/IconGlobal";
+import ColorPalette from "../components/home/ColorPalette.astro";
+import HighlightedText from "../components/global/TitleColor";
+import UseTextHidden from "../hooks/UseTextHidden";
+
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+//filtrar para obtener la section de home
+const homeSection = data?.sectionsHomeAbout.filter(
+  (section: SectionsHomeAbout) => section.section === "home",
+);
+//filtrar para obtener la section de home
+const dataBlocks = data?.sectionsHomeAbout.filter(
+  (section: SectionsHomeAbout) => section.section === "blocks",
+);
+//filtrar para obtener la section de about
+const aboutSection = data?.sectionsHomeAbout.filter(
+  (section: SectionsHomeAbout) => section.section === "about",
+);
+---
+
+<Layout
+  title={`Home | ${data.name}`}
+  description={dataBlocks[0].text}
+  favicon={data.logos.primary}
+  featuredImage={data.logos.favicon}
+  keywords={data.services.map((service) => service.title).join(", ")}
+>
+  <HeroSection2 data={data} blockSection={dataBlocks} client:load />
+  <BlockOne data={data} homeSection={homeSection} />
+  <div class="mb-[-200px] md:pt-16">
+    <div class="flex justify-center flex-col text-center">
+      <span
+        class="md:text-[50px] text-primary w-[70px] h-[70px] border-2 border-primary p-4 rounded-full flex justify-center items-center mx-auto hover:bg-secondary hover:text-white
+        transition duration-300 ease-in-out"
+      >
+        <IconGlobal />
+      </span>
+      <h2
+        class="text-center md:text-[60px] text-[30px] font-bold text-primary-500"
+      >
+        <UseTextHidden text="Our Services" client:load />
+      </h2>
+      <h2
+        class="md:text-[40px] text-[25px] mb-2 font-bold text-center text-secondary"
+      >
+        <HighlightedText text={data.slogan[3]} defaultColor="black" />
+      </h2>
+    </div>
+    <ServicesHome
+      dbServices={data.services}
+      landingServices={data.widgets.landingServices}
+      dataglobal={data}
+      client:load
+    />
+  </div>
+  <BlockTwo data={data} homeSection={homeSection} />
+
+  {
+    data.reviews.viewHome ? (
+      <div class="md:w-[75%] mx-auto w-[95%] md:py-24 py-10 flex justify-center flex-col text-center">
+        <h2 class="text-3xl font-bold text-gray-800 py-4">
+          <UseTextHidden text="What Our Customers Say" client:load />
+        </h2>
+        <review-widget widgetId={data.reviews.urlReviews} />
+      </div>
+    ) : null
+  }
+
+  <Directorios client:only data={data} />
+  <ValuesHome data={data} />
+
+  {
+    data.videoAnimado.length > 0 ? (
+      <div>
+        <div
+          class="flex justify-center rounded-br-[50px] h-[70vh] relative "
+          style={{
+            background: `url("${data.gallery[2]}")`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+          }}
+        >
+          {/* Poner un overlay */}
+          <div class="bg-black bg-opacity-70 w-full h-[70vh] absolute" />
+        </div>
+        <div class="mt-[-450px] z-10 relative">
+          <VideoAnimado data={data} />
+        </div>
+      </div>
+    ) : null
+  }
+
+  {data.widgets.colorPalette ? <ColorPalette /> : null}
+  <BlockOneAbout data={data} aboutSection={aboutSection} />
+
+  <MapComponent data={data} client:visible />
+</Layout>

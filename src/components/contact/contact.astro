@@ -1,0 +1,145 @@
+---
+import UseTextHidden from "../../hooks/UseTextHidden";
+import type { RootObject } from "../../interfaces/dbData";
+interface Props {
+  data: RootObject;
+}
+
+const { data } = Astro.props;
+---
+
+<div class="flex md:gap-10 gap-6 flex-wrap">
+  <div class="shrink-0 grow-0">
+    <div class="flex items-center self-center">
+      <div class="shrink-0">
+        <div
+          class="rounded-2xl bg-primary-100 p-4 text-primary h-14 w-14 flex justify-center items-center"
+          style={{ backgroundColor: data?.colors.primaryColor! }}
+        >
+          <i class="fas fa-phone text-white text-[24px]"></i>
+        </div>
+      </div>
+      <div class="ml-6 grow flex flex-col">
+        <p class="mb-2 font-bold">
+          <UseTextHidden text="Call Us Now!" client:load />
+        </p>
+        <div class="flex flex-col gap-2">
+          {
+            data.dataGeneral?.phones?.map((item) => (
+              <a
+                class="text-gray-800 font-bold text-[18px]"
+                href={`tel:+1${item.number}`}
+              >
+                +1 {item.number}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="shrink-0 grow-0">
+    <div class="flex items-center self-center">
+      <div class="shrink-0">
+        <div
+          class="rounded-2xl bg-primary-100 p-4 text-primary h-14 w-14 flex justify-center items-center"
+          style={{ backgroundColor: data?.colors.primaryColor! }}
+        >
+          <i class="fas fa-map text-white text-[24px]"></i>
+        </div>
+      </div>
+      <div class="ml-6 grow">
+        <p class="mb-2 font-bold"></p>
+          <UseTextHidden text="Location" client:load />
+        </p>
+        <div class="flex flex-col gap-2">
+          {
+            data.dataGeneral?.location.slice(0, 1).map((item) => (
+              <a class="text-gray-800 font-bold text-[18px]" href="#">
+                {item.city}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  {
+    data.dataGeneral?.openingHours.map((item) => {
+      return (
+        <div class="shrink-0 grow-0">
+          <div class="flex items-center self-center">
+            <div class="shrink-0">
+              <div
+                class="rounded-2xl bg-primary-100 p-4 text-primary h-14 w-14 flex justify-center items-center"
+                style={{ backgroundColor: data?.colors.primaryColor! }}
+              >
+                <i class="fas fa-clock text-white text-[24px]" />
+              </div>
+            </div>
+
+            <div class="ml-6 grow">
+              <p class="mb-2 font-bold">{item.days}</p>
+              <span class="text-gray-800 font-bold text-[18px]">
+                {item.hours}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    })
+  }
+
+  <div class="shrink-0 grow-0">
+    <div class="flex items-center self-center">
+      <div class="shrink-0">
+        <div
+          class="rounded-2xl bg-primary-100 p-4 text-primary h-14 w-14 flex justify-center items-center"
+          style={{ backgroundColor: data?.colors.primaryColor! }}
+        >
+          <i class="fas fa-envelope text-white text-[24px]"></i>
+        </div>
+      </div>
+      <div class="ml-6 grow">
+        <p class="mb-2 font-bold">
+          <UseTextHidden text="Email Us!" client:load />
+        </p>
+        <div class="flex flex-col gap-2">
+          {
+            data.dataGeneral?.emails?.map((item) => (
+              <a
+                class="text-gray-800 font-bold text-[16px]"
+                href={`mailto:${item.email}`}
+              >
+                {item.email}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="relative">
+    <img
+      src={data?.gallery[0]}
+      alt="Contat Image"
+      class="w-[100vw] h-[300px] object-cover rounded-lg"
+    />
+    <div
+      class="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center rounded-lg"
+    >
+      <div class="text-center">
+        <h3 class="text-white font-bold text-[36px] mb-6">
+          {data.slogan[5]}
+        </h3>
+        <a
+          href={`tel:+1${data.dataGeneral?.phones?.[0].number}`}
+          class="text-white font-bold text-[18px] px-8 py-3 rounded-lg"
+          style={{ backgroundColor: data?.colors.primaryColor! }}
+        >
+          Call Us Now!
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

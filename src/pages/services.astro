@@ -1,0 +1,74 @@
+---
+import type { RootObject, SectionsHomeAbout, Service } from "../interfaces/dbData";
+import Layout from "../layouts/Layout.astro";
+import TransparentHeader from "../components/global/TransparentHeader.astro";
+import Map from "../components/contact/Map";
+import ButtonContent from "../components/buttons/Buttons";
+import UseTextHidden from "../hooks/UseTextHidden";
+
+let API_URL = import.meta.env.API_URL;
+// Realiza la llamada a la API
+const response = await fetch(`${API_URL}`);
+const data: RootObject = await response.json();
+
+//filtrar para obtener la section de home
+const dataBlocks = data?.sectionsHomeAbout.filter(
+  (section: SectionsHomeAbout) => section.section === "blocks",
+);
+
+---
+
+<Layout
+  title={`Services | ${data.name}`}
+  description={dataBlocks[2].text}
+  favicon={data.logos.primary}
+  featuredImage={data.logos.favicon}
+  keywords={data.services.map((service) => service.title).join(", ")}
+>
+  <TransparentHeader title="Services" image={dataBlocks[2].additionalImages[0]} />
+  <div class="md:w-[70%] mx-auto w-[95%] md:py-24 py-4">
+    <div class="flex justify-center flex-col items-center mt-8">
+      <h2
+        class="text-5xl font-bold text-center text-primaryColor border-l-[8px] pl-2 border-primary"
+      >
+        <UseTextHidden text="Our Services" client:load />
+      </h2>
+      <h3
+        class="text-3xl font-bold text-center text-primaryColor mt-4 capitalize"
+      >
+        {data.slogan[3]}
+      </h3>
+    </div>
+    <div class="flex flex-col gap-16 py-4 md:px-1 px-4">
+      {
+        data.services.map((item, index) => {
+          const isEven = index % 2 === 0;
+          return (
+            <div class={`flex ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:pb-[20px] pb-[50px]`}>
+              <div class="md:w-[50%] w-full flex justify-center self-center md:px-6 px-2">
+                <img
+                  src={item.description[0].image}
+                  alt={item.title}
+                  class="md:w-[450px] md:h-[450px] w-[350px] h-[350px] rounded-full border-[10px] border-primary object-cover"
+                />
+              </div>
+              <div class="md:w-[50%] w-full flex flex-col self-center md:text-start text-center md:px-6 px-2">
+                <h2 class="md:text-[30px] text-[25px] font-bold text-secondary">
+                  {item.title}
+                </h2>
+                <p class="pb-3">{item.description[0].text}</p>
+                <div class="w-full flex md:justify-start justify-center">
+                  <ButtonContent
+                    titleBtn="Call Us Now"
+                    linkBtn={`tel:+1${data.dataGeneral.phones[0].number}`}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+  <Map data={data} />
+</Layout>
