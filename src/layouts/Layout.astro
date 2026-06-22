@@ -15,9 +15,10 @@ interface Props {
   keywords: string;
   featuredImage: string;
   favicon: string;
+  canonical?: string;
 }
 
-const { title, description, keywords, featuredImage, favicon } = Astro.props;
+const { title, description, keywords, featuredImage, favicon, canonical } = Astro.props;
 let API_URL = import.meta.env.API_URL;
 // Realiza la llamada a la API
 const response = await fetch(`${API_URL}`);
@@ -44,7 +45,7 @@ const isSubdomainNetlify = domain.includes("netlify.app");
     <meta property="og:description" content={description} />
     <meta property="og:image" content={featuredImage} />
     <meta property="og:type" content="website" />
-
+    {canonical && <link rel="canonical" href={canonical} />}
     <!-- mostrar imagen en la card al enviar -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />

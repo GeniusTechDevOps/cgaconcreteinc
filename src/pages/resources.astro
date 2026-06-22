@@ -1,0 +1,105 @@
+---
+import TransparentHeader from "../components/global/TransparentHeader.astro";
+import ResourcesCollections from "../components/resources/ResourcesCollections.astro";
+import ResourcesEmptyState from "../components/resources/ResourcesEmptyState.astro";
+import ResourcesErrorBanner from "../components/resources/ResourcesErrorBanner.astro";
+import ResourcesOverview from "../components/resources/ResourcesOverview.astro";
+import type { RootObject } from "../interfaces/dbData";
+import Layout from "../layouts/Layout.astro";
+import {
+    buildPublicGeoPageUrl,
+    fetchAppData,
+    fetchPublicGeoPage,
+} from "../utils/api";
+import { normalizeGeoPages } from "../utils/geo";
+
+const siteResult = await fetchAppData();
+if (!siteResult.ok) throw new Error(siteResult.error);
+
+const data: RootObject = siteResult.data;
+const geoUrl = buildPublicGeoPageUrl();
+const geoResult = await fetchPublicGeoPage();
+const geoError = geoResult.ok
+    ? null
+    : `Geo request failed for ${geoUrl}: ${geoResult.error}`;
+
+if (geoError) console.error("Error fetching geo resources:", geoError);
+
+const pages = normalizeGeoPages(geoResult.ok ? geoResult.data : []).filter(
+    (page) => page.status === "published",
+);
+const [featuredPage, ...secondaryPages] = pages;
+
+const citiesCount = new Set(
+    pages.map((page) => page.city.toLowerCase()).filter(Boolean),
+).size;
+const servicesCount = new Set(
+    pages.map((page) => page.serviceName.toLowerCase()).filter(Boolean),
+).size;
+
+const aiPlatforms = [
+    {
+        name: "ChatGPT",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg",
+        shell: "from-emerald-500 to-teal-600",
+    },
+    {
+        name: "Gemini",
+        icon: "https://cdn.simpleicons.org/googlegemini/FFFFFF",
+        shell: "from-sky-500 to-indigo-600",
+    },
+    {
+        name: "Grok",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/f/f4/Grok_logo_without_text.svg",
+        shell: "from-black to-black",
+    },
+    {
+        name: "Claude",
+        icon: "https://cdn.simpleicons.org/anthropic/FFFFFF",
+        shell: "from-orange-400 to-amber-600",
+    },
+    {
+        name: "Perplexity",
+        icon: "https://cdn.simpleicons.org/perplexity/FFFFFF",
+        shell: "from-cyan-500 to-sky-700",
+    },
+    {
+        name: "Copilot",
+        icon: "https://cdn.simpleicons.org/githubcopilot/FFFFFF",
+        shell: "from-violet-500 to-blue-600",
+    },
+];
+---
+
+<Layout
+    title={`Portfolio | ${data.name}`}
+    description="Discover local service resources, city-specific guides, and expert answers that help homeowners and businesses compare options, build trust, and contact the right contractor faster."
+    favicon={data.logos.primary}
+    featuredImage={data.logos.favicon}
+    keywords={data.services.map((service) => service.title).join(", ")}
+>
+<TransparentHeader title="Resources" image={data.gallery[5]} />
+    <section class="mx-auto w-[90vw] px-6 py-10">
+        <ResourcesErrorBanner error={geoError} />
+
+        <ResourcesOverview
+            pagesCount={pages.length}
+            citiesCount={citiesCount}
+            servicesCount={servicesCount}
+            aiPlatforms={aiPlatforms}
+        />
+
+        {
+            pages.length === 0 ? (
+                <ResourcesEmptyState />
+            ) : (
+                <ResourcesCollections
+                    featuredPage={featuredPage}
+                    secondaryPages={secondaryPages}
+                    companyName={data.name}
+                    fallbackPhone={data?.dataGeneral?.phones?.[0]?.number}
+                />
+            )
+        }
+    </section>
+</Layout>

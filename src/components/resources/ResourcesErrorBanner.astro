@@ -1,0 +1,18 @@
+---
+interface Props {
+    error?: string | null;
+}
+
+const { error } = Astro.props as Props;
+---
+
+{
+    error && (
+        <div class="mb-6 rounded-[2rem] border border-red-200 bg-red-50 px-6 py-5 text-red-900 shadow-sm">
+            <p class="text-sm font-black uppercase tracking-[0.18em]">
+                Geo API error
+            </p>
+            <p class="mt-2 break-words text-sm leading-7">{error}</p>
+        </div>
+    )
+}

@@ -78,6 +78,11 @@ export default function Menu({
       statusRoutes: data?.widgets?.landingVideos && data.videos?.landingVideos,
     },
     {
+      name: "Resources",
+      path: "/resources",
+      icon: "Resources",
+    },
+    {
       name: "Blog",
       path: "/blog",
       icon: "Blog",

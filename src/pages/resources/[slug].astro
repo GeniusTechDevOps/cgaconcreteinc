@@ -1,0 +1,563 @@
+---
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import TransparentHeader from "../../components/global/TransparentHeader.astro";
+import type { RootObject } from "../../interfaces/dbData";
+import { fetchAppData, fetchPublicGeoPage } from "../../utils/api";
+import { findGeoPageBySlug, normalizeGeoPages } from "../../utils/geo";
+
+const { slug } = Astro.params;
+
+const siteResult = await fetchAppData();
+if (!siteResult.ok) {
+  console.error("Error fetching app data (resource detail):", siteResult.error);
+  return new Response(null, { status: 500 });
+}
+
+const data: RootObject = siteResult.data;
+
+const geoResult = await fetchPublicGeoPage();
+if (!geoResult.ok) {
+  console.error("Error fetching geo resource detail:", geoResult.error);
+  return new Response(null, { status: 500 });
+}
+
+const pages = normalizeGeoPages(geoResult.data).filter((page) => page.status === "published");
+const currentPage = findGeoPageBySlug(pages, slug);
+
+if (!currentPage) {
+  return new Response(null, { status: 404 });
+}
+
+const title = currentPage.title;
+const description = currentPage.description;
+const keywords = currentPage.keywords.join(", ");
+const proofs = currentPage.proofs;
+const sections = currentPage.sections ?? [];
+const faqs = currentPage.faqs ?? [];
+const contractor = currentPage.contractor;
+const service = currentPage.service;
+const location = currentPage.location;
+const cta = currentPage.content?.cta;
+const schemaItems = Array.isArray(currentPage.schema)
+  ? currentPage.schema.filter((item) => item?.jsonLd)
+  : [];
+const aiPlatforms = [
+    {
+        name: "ChatGPT",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg",
+        shell: "from-emerald-500 to-teal-600",
+    },
+    {
+        name: "Gemini",
+        icon: "https://cdn.simpleicons.org/googlegemini/FFFFFF",
+        shell: "from-sky-500 to-indigo-600",
+    },
+    {
+        name: "Grok",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/f/f4/Grok_logo_without_text.svg",
+        shell: "from-black to-black",
+    },
+    {
+        name: "Claude",
+        icon: "https://cdn.simpleicons.org/anthropic/FFFFFF",
+        shell: "from-orange-400 to-amber-600",
+    },
+    {
+        name: "Perplexity",
+        icon: "https://cdn.simpleicons.org/perplexity/FFFFFF",
+        shell: "from-cyan-500 to-sky-700",
+    },
+    {
+        name: "Copilot",
+        icon: "https://cdn.simpleicons.org/githubcopilot/FFFFFF",
+        shell: "from-violet-500 to-blue-600",
+    },
+];
+const audience = [service?.residential ? "Residential" : "", service?.commercial ? "Commercial" : ""]
+  .filter(Boolean)
+  .join(" & ");
+const trustBadges = [
+  contractor?.licensed ? "Licensed" : "",
+  contractor?.insured ? "Insured" : "",
+  contractor?.bonded ? "Bonded" : "",
+  contractor?.freeEstimates ? "Free Estimates" : "",
+  contractor?.emergencyService ? "Emergency Service" : "",
+].filter(Boolean);
+const certifications = currentPage.trust?.certifications ?? [];
+const warranties = currentPage.trust?.warranties ?? [];
+const reviewHighlights = currentPage.trust?.reviewHighlights ?? [];
+const ratingValue = contractor?.rating ? Number(contractor.rating).toFixed(1) : "";
+const reviewCount = contractor?.reviewCount || 0;
+
+const publishedDate = currentPage.publishedAt
+  ? new Date(currentPage.publishedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  : "";
+
+const updatedDate = currentPage.updatedAt
+  ? new Date(currentPage.updatedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  : "";
+
+const phone = String(cta?.phone || contractor?.phone || data?.dataGeneral?.phones?.[0]?.number || "").trim();
+const phoneHref = phone ? `tel:${phone.replace(/[^0-9+]/g, "")}` : "";
+
+const platformIconTheme = (name: string) => {
+  if (name === "ChatGPT") return "background:#10b981;color:white;";
+  if (name === "Gemini") return "background:#2563eb;color:white;";
+  if (name === "Grok") return "background:#111827;color:white;";
+  if (name === "Claude") return "background:#f97316;color:white;";
+  if (name === "Perplexity") return "background:#06b6d4;color:white;";
+  if (name === "Copilot") return "background:#8b5cf6;color:white;";
+  return "background:#525252;color:white;";
+};
+
+const platformPillTheme = (name: string) => {
+  if (name === "ChatGPT") return "background:#10b981;color:white;";
+  if (name === "Gemini") return "background:#2563eb;color:white;";
+  if (name === "Grok") return "background:#111827;color:white;";
+  if (name === "Claude") return "background:#f97316;color:white;";
+  if (name === "Perplexity") return "background:#06b6d4;color:white;";
+  if (name === "Copilot") return "background:#8b5cf6;color:white;";
+  return "background:#525252;color:white;";
+};
+---
+
+<Layout
+  title={currentPage.seo?.metaTitle || currentPage.seo?.title || title}
+  description={description}
+  favicon={data.logos?.primary ?? ""}
+  keywords={keywords}
+  featuredImage={data.logos?.primary ?? ""}
+  canonical={currentPage.canonical}
+>
+  {schemaItems.map((item) => (
+    <script type="application/ld+json" set:html={JSON.stringify(item.jsonLd)} />
+  ))}
+
+  <TransparentHeader
+    title={currentPage.seo?.h1 || title}
+    image={data.gallery?.[2] ?? data.logos?.primary ?? ""}
+  />
+
+  <section class="max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-10">
+    <div class="overflow-hidden rounded-[2.5rem] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)]">
+      <div class="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
+        <div class="relative overflow-hidden border-b border-black/8 p-6 sm:p-8 lg:border-b-0 lg:border-r" style={{ background: "color-mix(in srgb, var(--primary) 6%, white 94%)" }}>
+          <div class="relative">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-primary" style={{ background: "color-mix(in srgb, var(--primary) 10%, white 90%)", borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)" }}>
+                <i class="fa-solid fa-book-open mr-2" aria-hidden="true" />
+                Resource Guide
+              </span>
+              {location?.city && (
+                <span class="inline-flex items-center rounded-full border border-black/10 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-text/72">
+                  <i class="fa-solid fa-location-dot mr-2 text-primary" aria-hidden="true" />
+                  {location.city}, {location.stateCode || location.state}
+                </span>
+              )}
+              {service?.name && (
+                <span class="inline-flex items-center rounded-full border border-black/10 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-text/72">
+                  <i class="fa-solid fa-screwdriver-wrench mr-2 text-primary" aria-hidden="true" />
+                  {service.name}
+                </span>
+              )}
+            </div>
+
+            <h1 class="mt-6 max-w-5xl text-3xl font-black tracking-[-0.04em] text-title sm:text-5xl lg:text-6xl">
+              {currentPage.seo?.h1 || title}
+            </h1>
+
+            {currentPage.content?.summary && (
+              <p class="mt-5 max-w-3xl text-base leading-8 text-text/84 sm:text-lg">
+                {currentPage.content.summary}
+              </p>
+            )}
+
+            <div class="mt-6 grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+              <div class="rounded-[1.9rem] border border-black/10 bg-white p-5 shadow-sm">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-text/55">Resource details</p>
+                <div class="mt-4 grid grid-cols-1 gap-3">
+                  <div class="rounded-[1.35rem] border border-black/8 bg-neutral-50 px-4 py-4">
+                    <p class="text-[11px] uppercase tracking-[0.16em] text-text/55">Service</p>
+                    <p class="mt-2 text-base font-black text-title">{service?.name || "Service Resource"}</p>
+                  </div>
+                  <div class="rounded-[1.35rem] border border-black/8 bg-neutral-50 px-4 py-4">
+                    <p class="text-[11px] uppercase tracking-[0.16em] text-text/55">Audience</p>
+                    <p class="mt-2 text-base font-black text-title">{audience || "General"}</p>
+                  </div>
+                  <div class="rounded-[1.35rem] border border-black/8 bg-neutral-50 px-4 py-4">
+                    <p class="text-[11px] uppercase tracking-[0.16em] text-text/55">Published</p>
+                    <p class="mt-2 text-base font-black text-title">{publishedDate || "Available now"}</p>
+                  </div>
+                  <div class="rounded-[1.35rem] border border-black/8 bg-neutral-50 px-4 py-4">
+                    <p class="text-[11px] uppercase tracking-[0.16em] text-text/55">Updated</p>
+                    <p class="mt-2 text-base font-black text-title">{updatedDate || publishedDate || "Recently"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid gap-4">
+                {phoneHref && (
+                  <div class="rounded-[1.9rem] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)]" style={{ background: "var(--primary)" }}>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-white/72">Direct contact</p>
+                    <div class="mt-4 grid gap-4">
+                      <div class="rounded-[1.35rem] border border-white/20 bg-white/10 px-4 py-4">
+                        <p class="text-sm font-semibold text-white/78">Call now</p>
+                        <a
+                          href={phoneHref}
+                          class="mt-1 inline-flex text-3xl font-black tracking-tight text-white transition hover:text-white/90 sm:text-4xl"
+                        >
+                          {phone}
+                        </a>
+                      </div>
+                      <div>
+                        <a
+                          href={phoneHref}
+                          class="inline-flex w-full items-center justify-center gap-3 rounded-[1.2rem] bg-white px-5 py-4 text-sm font-black text-title shadow-lg transition hover:-translate-y-0.5"
+                        >
+                          <i class="fa-solid fa-phone-volume text-primary" aria-hidden="true" />
+                          {cta?.buttonText || "Call now"}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div class="rounded-[1.9rem] border border-black/10 bg-white p-5 shadow-sm">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <p class="text-[11px] font-black uppercase tracking-[0.18em] text-text/55">AI distribution</p>
+                      <p class="mt-1 text-sm leading-6 text-text/72">Structured for discovery across assistant-style search experiences.</p>
+                    </div>
+                    <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <i class="fa-solid fa-robot" aria-hidden="true" />
+                    </span>
+                  </div>
+                  <div class="mt-6 flex items-center py-1">
+                    {aiPlatforms.map((platform, index) => (
+                      <div
+                        class="group relative shrink-0"
+                        style={{ marginLeft: index === 0 ? "0" : "-1.45rem", zIndex: String(aiPlatforms.length - index) }}
+                      >
+                        <div class="flex h-14 w-14 items-center overflow-visible rounded-full border-4 border-white bg-white">
+                          <span
+                            class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full p-3 cursor-pointer"
+                            style={platformIconTheme(platform.name)}
+                          >
+                            <img
+                              src={platform.icon}
+                              alt={`${platform.name} logo`}
+                              class="h-6 w-6 object-contain"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </span>
+                        </div>
+                        <span
+                          class="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold leading-none text-white opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
+                          style={platformPillTheme(platform.name)}
+                        >
+                          {platform.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid content-start gap-4 bg-neutral-50 p-6 sm:p-8">
+          <section class="rounded-[1.9rem] border border-black/10 bg-white p-5 shadow-sm">
+            <p class="text-xs uppercase tracking-[0.18em] text-text/55">Resource snapshot</p>
+            <h2 class="mt-3 text-2xl font-black text-title">Built for trust and discovery</h2>
+            <dl class="mt-5 space-y-4 text-sm">
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/60">Contractor</dt>
+                <dd class="text-right font-semibold text-title">{contractor?.name || data.name}</dd>
+              </div>
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/60">Category</dt>
+                <dd class="text-right font-semibold text-title">{service?.category || "Local Service"}</dd>
+              </div>
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/60">Coverage</dt>
+                <dd class="text-right font-semibold text-title">{location?.city}, {location?.stateCode || location?.state}</dd>
+              </div>
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/60">Indexing</dt>
+                <dd class="text-right font-semibold text-title">AI-ready structure</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="rounded-[1.9rem] border p-5 shadow-sm" style={{ background: "color-mix(in srgb, var(--primary) 8%, white 92%)", borderColor: "color-mix(in srgb, var(--primary) 16%, transparent)" }}>
+            <p class="text-xs uppercase tracking-[0.18em] text-text/55">Positioning note</p>
+            <p class="mt-3 text-sm leading-7 text-text/82">
+              This page is structured to surface service intent, local context, proof points, and direct response actions in the first screenful.
+            </p>
+            {proofs.length > 0 && (
+              <div class="mt-4 flex flex-wrap gap-2">
+                {proofs.slice(0, 3).map((proof) => (
+                  <span class="inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-title">
+                    <i class="fa-solid fa-check mr-2 text-[10px] text-primary" aria-hidden="true" />
+                    {proof}
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <main class="space-y-6 lg:col-span-8">
+        {currentPage.content?.intro && (
+          <section class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-8 ring-1 ring-black/5 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+            <div class="grid gap-6 md:grid-cols-[auto_1fr] md:items-start">
+              <div class="inline-flex h-14 w-14 items-center justify-center rounded-[1.25rem] text-white shadow-sm" style={{ background: "var(--primary)" }}>
+                <i class="fa-solid fa-layer-group" aria-hidden="true" />
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-[0.18em] text-text/60">Overview</p>
+                <h2 class="mt-2 text-2xl font-black text-title">What this resource covers</h2>
+                <p class="mt-4 whitespace-pre-line text-base leading-8 text-text/85">
+              {currentPage.content.intro}
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {sections.length > 0 && (
+          <section class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-8 ring-1 ring-black/5 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+              <p class="text-xs uppercase tracking-[0.18em] text-text/60">Detailed content</p>
+              <h2 class="mt-2 text-2xl font-black text-title">Service and location breakdown</h2>
+              </div>
+              <span class="inline-flex items-center rounded-full border border-black/10 bg-neutral-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-text/65">
+                {sections.length} sections
+              </span>
+            </div>
+            <div class="mt-6 space-y-4">
+              {sections.map((section, index) => (
+                <article class="grid gap-4 rounded-[1.75rem] border border-black/8 bg-neutral-50 p-5 md:grid-cols-[auto_1fr] md:p-6">
+                  <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-black text-white shadow-sm" style={{ background: index % 2 === 0 ? "var(--primary)" : "var(--btn-color)" }}>
+                    {(index + 1).toString().padStart(2, "0")}
+                  </div>
+                  <div>
+                    <h2 class="text-2xl font-black text-title">{section?.title}</h2>
+                    <p class="mt-4 whitespace-pre-line text-base leading-8 text-text/85">{section?.body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {faqs.length > 0 && (
+          <section class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-8 ring-1 ring-black/5 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p class="text-xs uppercase tracking-[0.18em] text-text/60">FAQ</p>
+                <h2 class="mt-2 text-2xl font-black text-title">Frequently Asked Questions</h2>
+              </div>
+              <span class="inline-flex items-center rounded-full border border-black/10 bg-neutral-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-text/65">
+                {faqs.length} answers
+              </span>
+            </div>
+            <div class="mt-6 grid grid-cols-1 gap-4">
+              {faqs.map((faq) => (
+                <article class="rounded-[1.5rem] border border-black/8 bg-neutral-50 p-5 shadow-sm">
+                  <div class="flex items-start gap-4">
+                    <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <i class="fa-solid fa-circle-question" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <h3 class="text-lg font-bold text-title">{faq?.question}</h3>
+                      <p class="mt-3 text-base leading-7 text-text/85">{faq?.answer}</p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+      </main>
+
+      <aside class="lg:col-span-4">
+        <div class="space-y-4 lg:sticky lg:top-6">
+          <section class="rounded-[2rem] border border-black/10 bg-white/90 p-6 ring-1 ring-black/5 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-xl font-black text-title">Resource Snapshot</h3>
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <i class="fa-solid fa-chart-column" aria-hidden="true" />
+              </span>
+            </div>
+            <dl class="mt-5 space-y-4 text-sm">
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/65">Contractor</dt>
+                <dd class="text-right font-semibold text-title">{contractor?.name || data.name}</dd>
+              </div>
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/65">Category</dt>
+                <dd class="text-right font-semibold text-title">{service?.category || "Local Service"}</dd>
+              </div>
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/65">Coverage</dt>
+                <dd class="text-right font-semibold text-title">{location?.city}, {location?.stateCode || location?.state}</dd>
+              </div>
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-text/65">Audience</dt>
+                <dd class="text-right font-semibold text-title">{audience || "General"}</dd>
+              </div>
+            </dl>
+
+            {(ratingValue || trustBadges.length > 0) && (
+              <div class="mt-5 rounded-[1.5rem] border border-black/8 bg-neutral-50 p-4">
+                {ratingValue && (
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <p class="text-xs uppercase tracking-[0.18em] text-text/60">Rating</p>
+                      <p class="mt-1 text-2xl font-black text-title">{ratingValue}</p>
+                    </div>
+                    <p class="text-right text-sm leading-6 text-text/75">
+                      {reviewCount > 0 ? `${reviewCount}+ reviews` : "Verified trust signal"}
+                    </p>
+                  </div>
+                )}
+                {trustBadges.length > 0 && (
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    {trustBadges.map((badge) => (
+                      <span class="inline-flex items-center rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold text-primary">
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+
+          {proofs.length > 0 && (
+            <section class="rounded-[2rem] border border-black/10 bg-white/90 p-6 ring-1 ring-black/5 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+              <h3 class="text-xl font-black text-title">Why Clients Trust This Service</h3>
+              <div class="mt-5 space-y-3">
+                {proofs.map((proof) => (
+                  <div class="flex gap-3 rounded-2xl border border-black/8 bg-white p-4">
+                    <span class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="fa-solid fa-check text-xs" aria-hidden="true" />
+                    </span>
+                    <p class="text-sm leading-7 text-text/85">{proof}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {(certifications.length > 0 || warranties.length > 0 || reviewHighlights.length > 0) && (
+            <section class="rounded-[2rem] border border-black/10 bg-white/90 p-6 ring-1 ring-black/5 shadow-[0_18px_48px_rgba(15,23,42,0.08)]">
+              <h3 class="text-xl font-black text-title">Trust Layer</h3>
+
+              {certifications.length > 0 && (
+                <div class="mt-5">
+                  <p class="text-xs uppercase tracking-[0.18em] text-text/60">Certifications</p>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    {certifications.map((item) => (
+                      <span class="inline-flex items-center rounded-full border border-black/10 bg-neutral-50 px-3 py-2 text-xs font-semibold text-title">
+                        <i class="fa-solid fa-certificate mr-2 text-primary" aria-hidden="true" />
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {warranties.length > 0 && (
+                <div class="mt-5">
+                  <p class="text-xs uppercase tracking-[0.18em] text-text/60">Warranties</p>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    {warranties.map((item) => (
+                      <span class="inline-flex items-center rounded-full border border-black/10 bg-neutral-50 px-3 py-2 text-xs font-semibold text-title">
+                        <i class="fa-solid fa-shield-halved mr-2 text-primary" aria-hidden="true" />
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* {reviewHighlights.length > 0 && (
+                <div class="mt-5 space-y-3">
+                  <p class="text-xs uppercase tracking-[0.18em] text-text/60">Review Highlights</p>
+                  {reviewHighlights.map((highlight) => (
+                    <article class="rounded-[1.5rem] border border-black/8 bg-neutral-50 p-4">
+                      <div class="flex items-center justify-between gap-3">
+                        <p class="font-semibold text-title">{highlight.author || "Verified client"}</p>
+                        {highlight.rating && (
+                          <span class="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                            <i class="fa-solid fa-star text-[10px]" aria-hidden="true" />
+                            {highlight.rating.toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                      {highlight.text && (
+                        <p class="mt-3 text-sm leading-7 text-text/82">{highlight.text}</p>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              )} */}
+            </section>
+          )}
+
+          <section class="overflow-hidden rounded-[2rem] border border-black/10 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+            <div class="p-6 text-white" style={{ background: "var(--title)" }}>
+              <p class="text-xs uppercase tracking-[0.22em] text-white/72">Next Step</p>
+              <h3 class="mt-3 text-2xl font-black text-white">
+                {cta?.title || "Request your estimate"}
+              </h3>
+              <p class="mt-3 text-sm leading-7 text-white/84">
+                {cta?.description || "Contact our team for project guidance, pricing, and scheduling details."}
+              </p>
+            </div>
+            <div class="bg-white p-6">
+              <div class="space-y-3">
+                {phoneHref && (
+                  <a
+                    href={phoneHref}
+                    class="inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5"
+                    style={{ background: "var(--primary)" }}
+                  >
+                    <i class="fa-solid fa-phone" aria-hidden="true" />
+                    {cta?.buttonText || "Call now"}: {phone}
+                  </a>
+                )}
+
+                <a
+                  href="/resources"
+                  class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-neutral-50 px-4 py-3 text-sm font-semibold text-title transition hover:bg-neutral-100"
+                >
+                  <i class="fa-solid fa-arrow-left text-primary" aria-hidden="true" />
+                  Back to Resources
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Layout>

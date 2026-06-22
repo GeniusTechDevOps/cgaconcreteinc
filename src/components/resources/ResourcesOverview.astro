@@ -1,0 +1,290 @@
+---
+interface Platform {
+    name: string;
+    icon: string;
+    shell: string;
+}
+
+interface Props {
+    pagesCount: number;
+    citiesCount: number;
+    servicesCount: number;
+    aiPlatforms: Platform[];
+}
+
+const { pagesCount, citiesCount, servicesCount, aiPlatforms } =
+    Astro.props as Props;
+
+const assistantNote =
+    "Built to be cited by ChatGPT, Gemini, Grok, Claude and modern AI search assistants";
+
+const platformTheme = (name: string) => {
+    if (name === "ChatGPT") {
+        return {
+            card: "border-emerald-200 bg-emerald-50/80",
+            icon: "linear-gradient(135deg,#10b981,#0f766e)",
+        };
+    }
+
+    if (name === "Gemini") {
+        return {
+            card: "border-sky-200 bg-sky-50/80",
+            icon: "linear-gradient(135deg,#0ea5e9,#4f46e5)",
+        };
+    }
+
+    if (name === "Grok") {
+        return {
+            card: "border-slate-300 bg-slate-100",
+            icon: "linear-gradient(135deg,#111827,#000000)",
+        };
+    }
+
+    if (name === "Claude") {
+        return {
+            card: "border-orange-200 bg-orange-50/80",
+            icon: "linear-gradient(135deg,#fb923c,#d97706)",
+        };
+    }
+
+    if (name === "Perplexity") {
+        return {
+            card: "border-cyan-200 bg-cyan-50/80",
+            icon: "linear-gradient(135deg,#06b6d4,#0369a1)",
+        };
+    }
+
+    if (name === "Copilot") {
+        return {
+            card: "border-violet-200 bg-violet-50/80",
+            icon: "linear-gradient(135deg,#8b5cf6,#2563eb)",
+        };
+    }
+
+    return {
+        card: "border-black/10 bg-neutral-50",
+        icon: "linear-gradient(135deg,#525252,#171717)",
+    };
+};
+---
+
+<div class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+    <div class="overflow-hidden rounded-[2.5rem] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+        <div class="border-b border-black/8 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(245,245,245,0.94))] px-6 py-6 md:px-8">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-primary">
+                    <i class="fa-solid fa-grid-2" aria-hidden="true"></i>
+                    Resource Control Room
+                </span>
+                <span class="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-text/65">
+                    <i class="fa-solid fa-sparkles" aria-hidden="true"></i>
+                    Built for AI discovery
+                </span>
+            </div>
+            <div class="mt-6 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                <div>
+                    <h1 class="max-w-4xl text-4xl font-black tracking-[-0.04em] text-title md:text-6xl">
+                        A smarter way to present service resources
+                    </h1>
+                    <p class="mt-5 max-w-3xl text-base leading-8 text-text/88 md:text-lg">
+                        Review every published city-and-service page from one cleaner command center with stronger hierarchy and faster scanability.
+                    </p>
+                </div>
+                <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                    <div class="rounded-[1.6rem] border px-5 py-4 shadow-sm" style={{ background: "color-mix(in srgb, var(--primary) 12%, white 88%)", borderColor: "color-mix(in srgb, var(--primary) 24%, transparent)" }}>
+                        <p class="text-[11px] uppercase tracking-[0.18em] text-text/62">Published resources</p>
+                        <p class="mt-2 text-3xl font-black text-title">{pagesCount}</p>
+                        <p class="mt-1 text-xs leading-6 text-text/76">Pages ready for local intent visibility.</p>
+                    </div>
+                    <div class="rounded-[1.6rem] border px-5 py-4 shadow-sm" style={{ background: "color-mix(in srgb, var(--btn-color) 12%, white 88%)", borderColor: "color-mix(in srgb, var(--btn-color) 24%, transparent)" }}>
+                        <p class="text-[11px] uppercase tracking-[0.18em] text-text/62">Cities covered</p>
+                        <p class="mt-2 text-3xl font-black text-title">{citiesCount}</p>
+                        <p class="mt-1 text-xs leading-6 text-text/76">Distinct local markets already represented.</p>
+                    </div>
+                    <div class="rounded-[1.6rem] border px-5 py-4 shadow-sm" style={{ background: "color-mix(in srgb, var(--secondary) 12%, white 88%)", borderColor: "color-mix(in srgb, var(--secondary) 24%, transparent)" }}>
+                        <p class="text-[11px] uppercase tracking-[0.18em] text-text/62">Service topics</p>
+                        <p class="mt-2 text-3xl font-black text-title">{servicesCount}</p>
+                        <p class="mt-1 text-xs leading-6 text-text/76">Different service angles for buyers and AI.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 py-6 md:px-8">
+            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-text/55">
+                Indexing surfaces
+            </p>
+            <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {
+                    aiPlatforms.map((platform) => {
+                        const theme = platformTheme(platform.name);
+
+                        return (
+                        <div class={`flex h-full items-center gap-3 rounded-2xl border px-4 py-3 ${theme.card}`}>
+                            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl p-2 shadow-sm" style={{ background: theme.icon }}>
+                                <img src={platform.icon} alt={`${platform.name} logo`} class="h-5 w-5 object-contain" loading="lazy" decoding="async" />
+                            </span>
+                            <div class="min-w-0">
+                                <p class="text-[10px] uppercase tracking-[0.18em] text-text/50">Visibility</p>
+                                <p class="truncate text-sm font-bold text-title">{platform.name}</p>
+                            </div>
+                        </div>
+                    )})
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="grid gap-6">
+        <div class="rounded-[2.5rem] border border-black/10 bg-[linear-gradient(145deg,color-mix(in_srgb,var(--title)_6%,white_94%),white)] p-6 shadow-[0_24px_80px_rgba(15,23,42,0.10)] md:p-8">
+            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-text/55">Publishing notes</p>
+            <div class="mt-5 space-y-4">
+                <div class="rounded-[1.5rem] border p-4" style={{ background: "color-mix(in srgb, var(--primary) 8%, white 92%)", borderColor: "color-mix(in srgb, var(--primary) 18%, transparent)" }}><p class="text-sm font-bold text-title">Answer-first pages</p><p class="mt-2 text-sm leading-7 text-text/76">The strongest resources answer intent immediately and remove friction before contact.</p></div>
+                <div class="rounded-[1.5rem] border p-4" style={{ background: "color-mix(in srgb, var(--btn-color) 8%, white 92%)", borderColor: "color-mix(in srgb, var(--btn-color) 18%, transparent)" }}><p class="text-sm font-bold text-title">Trust-led presentation</p><p class="mt-2 text-sm leading-7 text-text/76">Contractor identity, location specificity, and service fit should stay visible near the top.</p></div>
+                <div class="rounded-[1.5rem] border p-4" style={{ background: "color-mix(in srgb, var(--secondary) 8%, white 92%)", borderColor: "color-mix(in srgb, var(--secondary) 18%, transparent)" }}><p class="text-sm font-bold text-title">Local precision</p><p class="mt-2 text-sm leading-7 text-text/76">Good geo pages feel custom to the city, not duplicated from a generic template.</p></div>
+            </div>
+        </div>
+        <div class="rounded-[2.5rem] border border-black/10 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] md:p-8">
+            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-text/55">Search assistant note</p>
+            <p class="mt-4 text-lg font-black leading-tight text-title">These resources are structured to be cited, skimmed, and converted from.</p>
+            <div class="mt-5 rounded-[1.5rem] border border-black/10 bg-[#050505] p-4 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                <div class="flex items-center gap-2 border-b border-white/10 pb-3">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/8 text-white/85">
+                        <i class="fa-solid fa-code" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-white/45">Live terminal</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">AI visibility note</p>
+                    </div>
+                </div>
+                <div class="resources-terminal mt-4" data-typing-shell>
+                    <p
+                        class="resources-typing text-sm font-semibold tracking-[0.08em] text-white/82"
+                        data-typing-text={assistantNote}
+                        aria-label={assistantNote}
+                    ></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .resources-terminal {
+        min-height: 5.5rem;
+        max-height: 8.5rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)),
+            #0a0a0a;
+        padding: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+    }
+
+    .resources-terminal::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .resources-terminal::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .resources-typing {
+        position: relative;
+        min-height: 4.5rem;
+        margin: 0;
+        padding-left: 1.2rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.9;
+    }
+
+    .resources-typing::before {
+        content: ">";
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: rgba(74, 222, 128, 0.95);
+        font-weight: 700;
+    }
+
+    .resources-typing.is-typing::after {
+        content: "";
+        display: inline-block;
+        width: 2px;
+        height: 1.1em;
+        margin-left: 0.2em;
+        vertical-align: -0.15em;
+        background: rgba(74, 222, 128, 0.9);
+        animation: resources-caret 0.9s step-end infinite;
+    }
+
+    @keyframes resources-caret {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .resources-terminal {
+            min-height: 5rem;
+            max-height: 7.5rem;
+        }
+
+        .resources-typing {
+            min-height: 4rem;
+        }
+    }
+</style>
+
+<script is:inline>
+    const typingElement = document.querySelector("[data-typing-text]");
+    const typingShell = document.querySelector("[data-typing-shell]");
+
+    if (typingElement instanceof HTMLElement) {
+        const fullText = typingElement.dataset.typingText ?? "";
+        const typingSpeed = 85;
+        const deletingSpeed = 42;
+        const pauseAfterTyping = 2400;
+        const pauseAfterDeleting = 700;
+
+        let index = 0;
+        let isDeleting = false;
+
+        const tick = () => {
+            typingElement.textContent = fullText.slice(0, index);
+            typingElement.classList.add("is-typing");
+
+            if (typingShell instanceof HTMLElement) {
+                typingShell.scrollTop = typingShell.scrollHeight;
+            }
+
+            if (!isDeleting && index < fullText.length) {
+                index += 1;
+                window.setTimeout(tick, typingSpeed);
+                return;
+            }
+
+            if (!isDeleting && index === fullText.length) {
+                isDeleting = true;
+                window.setTimeout(tick, pauseAfterTyping);
+                return;
+            }
+
+            if (isDeleting && index > 0) {
+                index -= 1;
+                window.setTimeout(tick, deletingSpeed);
+                return;
+            }
+
+            isDeleting = false;
+            window.setTimeout(tick, pauseAfterDeleting);
+        };
+
+        tick();
+    }
+</script>
