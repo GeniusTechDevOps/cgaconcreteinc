@@ -26,7 +26,7 @@ const Map = ({ data }: Props) => {
       >
         We Cover {data?.milesCover} Miles Around {data?.dataGeneral.location[0].city}
       </h2>
-      {/* <div className="md:w-[80%] mx-auto w-[95%] flex flex-wrap justify-center py-4 gap-4">
+      <div className="md:w-[80%] mx-auto w-[95%] flex flex-wrap justify-center py-4 gap-4">
         {data.dataGeneral.location.map((item, index) => (
           <span
             key={index}
@@ -40,7 +40,7 @@ const Map = ({ data }: Props) => {
             {item.city}
           </span>
         ))}
-      </div> */}
+      </div>
       <div className="relative">
         {selectedCity && (
           <iframe
