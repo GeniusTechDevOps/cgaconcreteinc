@@ -1,0 +1,186 @@
+---
+import FormatText from "../../hooks/FormatText";
+
+export interface Props {
+  data: any;
+}
+
+const { data } = Astro.props as Props;
+
+// Render only if Areas We Serve widget is enabled (normalize casing).
+const areasWeServeOn = Boolean(
+  (data as any)?.widgets?.areasWeServe ?? (data as any)?.widgets?.areasweserve
+);
+
+const MAX_CITIES = 20;
+const MAX_SERVICES_PER_CITY = 8;
+const MAX_TOTAL_LINKS = 220;
+
+const servicesRaw = Array.isArray(data?.services) ? data.services : [];
+const locationsRaw = Array.isArray(data?.dataGeneral?.location)
+  ? data.dataGeneral.location
+  : [];
+
+// Keep unique service titles only.
+const services: any[] = Array.from(
+  new Map(
+    servicesRaw
+      .filter((service: any) => service?.title)
+      .map((service: any) => [String(service.title).trim().toLowerCase(), service])
+  ).values()
+);
+
+// Keep unique cities and trim the list to a reasonable size.
+const locations: any[] = Array.from(
+  new Map(
+    locationsRaw
+      .filter((loc: any) => loc?.city)
+      .map((loc: any) => [String(loc.city).trim().toLowerCase(), loc])
+  ).values()
+).slice(0, MAX_CITIES);
+
+// Group service links by city.
+const grouped: Record<
+  string,
+  {
+    cityName: string;
+    citySlug: string;
+    items: { href: string; serviceTitle: string }[];
+  }
+> = {};
+
+let totalLinks = 0;
+for (const loc of locations) {
+  const city = String(loc.city).trim();
+  if (!city) continue;
+
+  const citySlug = FormatText(city);
+  grouped[city] = { cityName: city, citySlug, items: [] };
+
+  for (const service of services) {
+    if (grouped[city].items.length >= MAX_SERVICES_PER_CITY) break;
+    if (totalLinks >= MAX_TOTAL_LINKS) break;
+
+    const title = String(service.title).trim();
+    if (!title) continue;
+
+    const serviceSlug = FormatText(title);
+    grouped[city].items.push({
+      href: `/services/${serviceSlug}-in-${citySlug}`,
+      serviceTitle: title,
+    });
+    totalLinks++;
+  }
+}
+
+const areasCount = new Set(locations.map((l: any) => l.city)).size;
+const servicesCount = services.length;
+const cities = Object.values(grouped);
+---
+{areasWeServeOn ? (
+  <section class="w-full py-14 md:py-20">
+    <div class="mx-auto w-[92%] md:w-[86%]">
+      <div class="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-35px_rgba(15,23,42,0.45)]">
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.14),transparent_44%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.12),transparent_40%)]"></div>
+
+        <div class="relative px-5 py-10 md:px-10 md:py-12">
+          <div class="mx-auto mb-10 max-w-3xl text-center">
+            <p class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              <i class="fas fa-map-pin" aria-hidden="true"></i>
+              Local Coverage
+            </p>
+
+            <h2 class="mt-4 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
+              Areas We Serve
+            </h2>
+
+            <p class="mx-auto mt-4 max-w-2xl text-sm text-slate-600 md:text-base">
+              Explore our top services by city and jump directly to the page you need.
+            </p>
+
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold md:text-sm">
+              <span class="rounded-full bg-slate-900 px-3 py-1 text-white">
+                {areasCount} cities
+              </span>
+              <span class="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                {servicesCount} services
+              </span>
+              <span class="rounded-full bg-secondary/15 px-3 py-1 text-secondary">
+                {totalLinks} quick links
+              </span>
+            </div>
+          </div>
+
+          {cities.length === 0 ? (
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center">
+              <p class="text-slate-600">No services or locations configured.</p>
+            </div>
+          ) : (
+            <div class="mx-auto max-w-7xl columns-1 gap-4 space-y-2 md:columns-2 xl:columns-3">
+              {cities.map((group, idx) => {
+                const toggleId = `city-toggle-${idx}`;
+                return (
+                  <article class="relative mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <input
+                      id={toggleId}
+                      name="city-toggle"
+                      type="radio"
+                      class="peer sr-only"
+                      checked={idx === 0}
+                    />
+
+                    <label
+                      for={toggleId}
+                      class="flex cursor-pointer items-center justify-between gap-3 px-4 py-4 md:px-5"
+                    >
+                      <h3 class="text-lg font-extrabold text-slate-900 md:text-xl">
+                        {group.cityName}
+                      </h3>
+
+                      <div class="flex items-center gap-2">
+                        <span class="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-slate-900 px-2 text-xs font-bold text-white">
+                          {group.items.length}
+                        </span>
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 text-slate-500 transition-transform duration-200 peer-checked:rotate-180 peer-checked:border-primary peer-checked:text-primary">
+                          <i class="fas fa-chevron-down text-xs" aria-hidden="true"></i>
+                        </span>
+                      </div>
+                    </label>
+
+                    <div class="grid grid-rows-[0fr] border-t border-transparent px-4 transition-all duration-300 peer-checked:grid-rows-[1fr] peer-checked:border-slate-200 md:px-5">
+                      <div class="overflow-hidden">
+                        <ul class="space-y-2 pb-4 pt-3">
+                          {group.items.map((it) => (
+                            <li>
+                              <a
+                                href={it.href}
+                                class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-all duration-200 hover:border-primary/50 hover:bg-primary/5 hover:text-slate-900"
+                                aria-label={`View ${it.serviceTitle} in ${group.cityName}`}
+                              >
+                                <span class="truncate">{it.serviceTitle}</span>
+                                <i class="fas fa-arrow-right text-xs text-primary" aria-hidden="true"></i>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <a
+                          href={`/services?city=${group.citySlug}`}
+                          class="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary transition-opacity hover:opacity-80"
+                          aria-label={`Browse all services in ${group.cityName}`}
+                        >
+                          Browse {group.cityName}
+                          <i class="fas fa-chevron-right text-[10px]" aria-hidden="true"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+) : null}

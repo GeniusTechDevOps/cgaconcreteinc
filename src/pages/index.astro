@@ -15,6 +15,7 @@ import IconGlobal from "../components/global/IconGlobal";
 import ColorPalette from "../components/home/ColorPalette.astro";
 import HighlightedText from "../components/global/TitleColor";
 import UseTextHidden from "../hooks/UseTextHidden";
+import ServicesByLocation from "../components/areas/ServicesByLocation.astro";
 
 let API_URL = import.meta.env.API_URL;
 // Realiza la llamada a la API
@@ -70,6 +71,8 @@ const aboutSection = data?.sectionsHomeAbout.filter(
     />
   </div>
   <BlockTwo data={data} homeSection={homeSection} />
+
+  <ServicesByLocation data={data} />
 
   {
     data.reviews.viewHome ? (
