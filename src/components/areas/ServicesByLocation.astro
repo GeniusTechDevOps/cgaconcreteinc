@@ -17,8 +17,8 @@ const MAX_SERVICES_PER_CITY = 8;
 const MAX_TOTAL_LINKS = 220;
 
 const servicesRaw = Array.isArray(data?.services) ? data.services : [];
-const locationsRaw = Array.isArray(data?.dataGeneral?.location)
-  ? data.dataGeneral.location
+const locationsRaw = Array.isArray(data?.dataGeneral?.location.slice(14, 19))
+  ? data.dataGeneral.location.slice(14, 19)
   : [];
 
 // Keep unique service titles only.
