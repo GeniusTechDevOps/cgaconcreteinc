@@ -82,6 +82,10 @@ export default function Menu({
       path: "/resources",
       icon: "Resources",
     },
+        {
+      name: "Local Profile",
+      path: "/local-profile",
+    },
     {
       name: "Blog",
       path: "/blog",
@@ -102,7 +106,7 @@ export default function Menu({
   ];
 
   return (
-    <div className={`flex md:gap-6 gap-[24px] ${styleList}`}>
+    <div className={`flex md:gap-3 gap-[24px] ${styleList}`}>
       {routes.map((item, index) => {
         if (item.statusRoutes === undefined || item.statusRoutes === true) {
           return (
